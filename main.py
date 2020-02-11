@@ -14,6 +14,8 @@ import asyncio
 # from discord.ext import commands
 # TODO: Add ping function 
 
+from assets.time import get_time
+
 print(sys.version)
 
 client = discord.Client()
@@ -25,32 +27,6 @@ timezones_dictionary = {
 }
 
 guilds_csv = open('guilds.csv', 'a+')
-
-# Get time
-async def get_time(message, *args):
-
-  if args:
-    timezone_input = args[0]
-  
-  else:
-    timezone_input = 'Australia/Sydney'
-
-  try:
-    timezone_input = timezones_dictionary[timezone_input.lower()]
-  
-  # Nothing to replace
-  except KeyError:
-    pass
-  
-  try:
-    output_time = datetime.datetime.now(pytz.timezone(timezone_input))
-
-  # Incorrect Timezone 
-  except pytz.exceptions.UnknownTimeZoneError:
-    return ('Unknown Timezone')
-  
-  # Output
-  return output_time.strftime("%A %Y %B %d %H:%M:%S %Z %z")
   
 async def ping(message, *args):
   if args:
@@ -168,13 +144,17 @@ async def kick(message, *args):
 async def debug(message, *args):
   if any(
       [
-        message.author.id in admins,
+        message.author.id == 349495401335750658,
       ]
     ):
-
-    exec(' '.join(args))
   
-    return 'Done'
+    return exec(' '.join(args))
+
+async def get_admin(message, *args):
+
+  return message.author.permissions_in(
+          message.channel
+        ).administrator
 
 async def log(message):
 
@@ -240,6 +220,7 @@ verbs = {
   'echoa' : echo_a,
   'kick'  : kick,
   'debug' : debug,
+  'admin' : get_admin
 }
 
 channels = {
